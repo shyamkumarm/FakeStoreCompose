@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.0"
 coilCompose = "2.4.0"
+converterGson = "2.9.0"
 koinAndroid = "3.4.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -19,10 +20,13 @@ composeBom = "2024.04.01"
 lifecycleRuntimeComposeAndroid = "2.8.5"
 jetbrainsKotlinJvm = "2.0.0"
 embeddable = "2.0.21"
+retrofit = "2.9.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -46,6 +50,7 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorClientCore" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientCore" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycleRuntimeComposeAndroid" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
