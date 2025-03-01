@@ -6,6 +6,7 @@ import com.example.drinks.data.RemoteDataSource
 import com.example.drinks.data.RepoImpl
 import com.example.drinks.data.RetroClientApi
 import com.example.drinks.domain.DrinksUseCase
+import com.example.drinks.utils.ProductState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +26,8 @@ class MyDrinkViewmodel() : ViewModel() {
         getLiquorProducts()
     }
 
-    private fun getLiquorProducts() {
+    public fun getLiquorProducts() {
+        _productMutableState.tryEmit(ProductState.Loading)
         viewModelScope.launch {
             repoInterface.getLiquorProduct().flowOn(Dispatchers.IO).collect {
                 _productMutableState.emit(it)

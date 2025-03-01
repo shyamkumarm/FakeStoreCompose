@@ -1,25 +1,29 @@
 package com.example.drinks.data
 
-import com.example.drinks.presentation.ProductState
+import com.example.drinks.utils.NetworkError
+import com.example.drinks.utils.NetworkError.NetworkUnavailable.toUserMessage
+import com.example.drinks.utils.ProductState
+import okio.IOException
+import retrofit2.HttpException
+import java.net.SocketTimeoutException
 
 class RemoteDataSource(private val retrofitClient: RetroClientApi) {
     suspend fun getDrink(): ProductState {
-        return this.fetchResource()
-    }
-
-
-    private suspend inline fun fetchResource(): ProductState {
         return try {
-            val response = retrofitClient.getProducts()
-            ProductState.Success(response)
+            val result = retrofitClient.getProducts()
+            ProductState.Success(result)
         } catch (e: Exception) {
-            /*  val errorMsg = when (e) {
-                 is RedirectResponseException,
-                 is ClientRequestException,
-                 is ServerResponseException -> e.message ?: "Server error"
-                 else -> e.message ?: "Something went wrong"
-            }*/
-            ProductState.Error(e)
+            ProductState.Error(mapExceptionToNetworkError(e).toUserMessage())
         }
     }
+
+    private fun mapExceptionToNetworkError(e: Exception): NetworkError {
+        return when (e) {
+            is IOException -> NetworkError.NetworkUnavailable
+            is HttpException -> NetworkError.ServerError(e.code())
+            is SocketTimeoutException -> NetworkError.TimeoutError
+            else -> NetworkError.UnknownError(e.message ?: "Unknown error")
+        }
+    }
+
 }

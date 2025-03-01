@@ -31,6 +31,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,8 +46,9 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.drinks.R
 import com.example.drinks.domain.models.Drink
-import com.example.drinks.domain.models.LiquorProduct
 import com.example.drinks.ui.theme.MyComposeAppTheme
+import com.example.drinks.utils.ProductState
+import kotlinx.coroutines.launch
 
 class MainDrinkActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,10 +58,16 @@ class MainDrinkActivity : ComponentActivity() {
             val myDrinkViewmodel by viewModels<MyDrinkViewmodel>()
             val liquorProduct by myDrinkViewmodel.productState.collectAsStateWithLifecycle()
             MyComposeAppTheme {
+
+                val retryEvent = rememberCoroutineScope()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     DrinkListView(
                         dataCallback = liquorProduct,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding), retry = {
+                            retryEvent.launch {
+                                myDrinkViewmodel.getLiquorProducts()
+                            }
+                        }
                     )
                 }
             }
@@ -68,11 +76,11 @@ class MainDrinkActivity : ComponentActivity() {
 }
 
 @Composable
-fun DrinkListView(dataCallback: ProductState, modifier: Modifier = Modifier) {
+fun DrinkListView(dataCallback: ProductState, modifier: Modifier = Modifier, retry: () -> Unit) {
 
     when (dataCallback) {
         is ProductState.Success -> {
-            val state  = rememberLazyListState()
+            val state = rememberLazyListState()
             val buttonVisible by remember {
                 derivedStateOf {
                     state.firstVisibleItemIndex < 5
@@ -83,15 +91,16 @@ fun DrinkListView(dataCallback: ProductState, modifier: Modifier = Modifier) {
             }
             Log.d("Shyam", "DrinkListView ${list.size}")
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if(buttonVisible) {
-                        Button(onClick = { list.removeAt(0) }) {
-                            Text(
-                                text = "Remove in Total item ${list.size}", modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                            )
-                        }
+                if (buttonVisible) {
+                    Button(onClick = { list.removeAt(0) }) {
+                        Text(
+                            text = "Remove in Total item ${list.size}", modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                        )
                     }
-                LazyColumn(state = state,
+                }
+                LazyColumn(
+                    state = state,
                     modifier = modifier, contentPadding = PaddingValues(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
@@ -136,14 +145,20 @@ fun DrinkListView(dataCallback: ProductState, modifier: Modifier = Modifier) {
         )
 
         is ProductState.Error -> {
-            Box(modifier = modifier.fillMaxSize().background(Color.Green),
-                contentAlignment = Alignment.Center) {
-                Text( modifier = modifier
-                    .background(Color.Red),
-                    text = dataCallback.exception.message.toString(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge
-                )
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(Color.Green),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(onClick = { retry() }) {
+                    Text(
+                        text = dataCallback.exception,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+
             }
         }
     }
@@ -155,17 +170,9 @@ fun DrinkListView(dataCallback: ProductState, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     MyComposeAppTheme {
         DrinkListView(
-            ProductState.Success(
-                liquorProduct = LiquorProduct(
-                    listOf(
-                        Drink(
-                            idDrink = "1",
-                            strDrink = "shyam",
-                            strDrinkThumb = ""
-                        )
-                    )
-                )
+            ProductState.Error(
+               "sasas"
             )
-        )
+        ) {}
     }
 }
