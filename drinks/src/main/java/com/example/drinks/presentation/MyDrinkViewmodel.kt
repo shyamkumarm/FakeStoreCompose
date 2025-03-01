@@ -9,7 +9,6 @@ import com.example.drinks.domain.DrinksUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
@@ -19,18 +18,17 @@ class MyDrinkViewmodel() : ViewModel() {
         DrinksUseCase(RepoImpl(RemoteDataSource(RetroClientApi.retroImpl)))
     }
 
-    private val _productMutableState = MutableStateFlow<DataCallback>(DataCallback.Loading)
+    private val _productMutableState = MutableStateFlow<ProductState>(ProductState.Loading)
     val productState = _productMutableState.asStateFlow()
+
     init {
         getLiquorProducts()
     }
 
     private fun getLiquorProducts() {
         viewModelScope.launch {
-            repoInterface.getLiquorProduct().flowOn(Dispatchers.IO).catch {
-                _productMutableState.emit(DataCallback.Error(it))
-            }.collect {
-                _productMutableState.emit(DataCallback.Success(it))
+            repoInterface.getLiquorProduct().flowOn(Dispatchers.IO).collect {
+                _productMutableState.emit(it)
             }
         }
     }
