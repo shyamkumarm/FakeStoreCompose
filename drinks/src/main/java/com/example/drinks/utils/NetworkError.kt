@@ -8,10 +8,10 @@ sealed class NetworkError {
 
     fun NetworkError.toUserMessage(): String {
         return when (this) {
-            is NetworkError.NetworkUnavailable -> "No internet connection. Please check your network settings."
-            is NetworkError.ServerError -> "Server error: ${this.code}. Please try again later."
-            is NetworkError.TimeoutError -> "Request timed out. Please check your connection."
-            is NetworkError.UnknownError -> "An unexpected error occurred: ${this.message}"
+            is NetworkUnavailable -> "No internet connection. Please check your network settings."
+            is ServerError -> "Server error: ${this.code}. Please try again later."
+            is TimeoutError -> "Request timed out. Please check your connection."
+            is UnknownError -> "An unexpected error occurred: ${this.message}"
         }
     }
 }

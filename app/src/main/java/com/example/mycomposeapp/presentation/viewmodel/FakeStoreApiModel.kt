@@ -1,20 +1,19 @@
 package com.example.mycomposeapp.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycomposeapp.domain.ProductUseCase
 import com.example.mycomposeapp.presentation.ResultCallback
-import com.example.mycomposeapp.domain.RepositoryInterface
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FakeStoreApiModel(
     private val productUseCase: ProductUseCase,
@@ -43,7 +42,9 @@ class FakeStoreApiModel(
 
     private fun getFakeProducts() {
         viewModelScope.launch {
-            val result = productUseCase.getFakeProductsList()
+            val result = withContext(Dispatchers.IO) {
+                productUseCase.getFakeProductsList()
+            }
             //_items.value = ResultCallback.Success(products)
             savedStateHandle["products"] = result
 
