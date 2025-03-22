@@ -4,11 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycomposeapp.domain.ProductUseCase
-import com.example.mycomposeapp.presentation.ResultCallback
+import com.example.mycomposeapp.domain.model.FakeProductsItem
+import com.example.mycomposeapp.presentation.ResultState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
@@ -28,16 +28,16 @@ class FakeStoreApiModel(
         getFakeProducts()
     }
 
-    private val _items: MutableStateFlow<ResultCallback> = MutableStateFlow(ResultCallback.Loading)
-    val fakeProducts: StateFlow<ResultCallback> = _items.asStateFlow()
-    val savedStateHandleProducts: StateFlow<ResultCallback> =
-        savedStateHandle.getStateFlow("products", ResultCallback.Loading)
+    private val _items = MutableStateFlow(ResultState.Loading)
+    val fakeProducts = _items.asStateFlow()
+    val savedStateHandleProducts =
+    savedStateHandle.getStateFlow<ResultState<List<FakeProductsItem>>>("products", ResultState.Loading)
 
 
-    val flowItems = flow<ResultCallback> {
+    val flowItems = flow {
         //delay(4_000)
         emit(productUseCase.getFakeProductsList())
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ResultCallback.Loading)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ResultState.Loading)
 
 
     private fun getFakeProducts() {

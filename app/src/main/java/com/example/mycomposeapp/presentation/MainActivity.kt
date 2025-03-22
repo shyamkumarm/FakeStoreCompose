@@ -57,16 +57,17 @@ class MainActivity : ComponentActivity() {
 
                 Log.d("shyam", "scaffold called $productsItem")
 
-                when (productsItem) {
-                    is ResultCallback.Success -> {
-                        ListView((productsItem as ResultCallback.Success).data, innerPadding){
+                when (val items  = productsItem) {
+                    is ResultState.Success -> {
+                        ListView(items.data, innerPadding) {
                             Log.d("shyam", "item clicked $it")
                         }
                     }
-                    is ResultCallback.Error -> {
+
+                    is ResultState.Error -> {
                         Text(
                             textAlign = TextAlign.Center,
-                            text = "Error: ${(productsItem as ResultCallback.Error).exception}",
+                            text = "Error: ${items.exception}",
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier
                                 .padding(innerPadding)
@@ -74,12 +75,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    is ResultCallback.Loading -> {
+                    ResultState.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(innerPadding)
                                 .fillMaxSize()
-                                 .wrapContentSize(Alignment.Center)
+                                .wrapContentSize(Alignment.Center)
                         )
                     }
                 }
@@ -89,13 +90,12 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, heightDp = 400)
 @Composable
 fun GreetingPreview() {
     Scaffold(topBar = { TopBar() }) { contentPadding ->
-        ListView(List(5) { FakeProductsItem.previewContent }, contentPadding){
+        ListView(List(5) { FakeProductsItem.previewContent }, contentPadding) {
             Log.d("shyam", "item clicked $it")
         }
     }

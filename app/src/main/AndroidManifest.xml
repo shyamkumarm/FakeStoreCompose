@@ -17,7 +17,7 @@
         android:theme="@style/Theme.MyComposeApp"
         tools:targetApi="31">
         <activity
-            android:name="com.example.drinks.presentation.MainDrinkActivity"
+            android:name="com.example.mycomposeapp.presentation.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyComposeApp">
             <intent-filter>

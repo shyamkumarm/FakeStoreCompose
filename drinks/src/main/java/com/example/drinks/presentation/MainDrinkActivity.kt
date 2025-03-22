@@ -29,9 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,7 +87,7 @@ fun DrinkListView(dataCallback: ProductState, modifier: Modifier = Modifier, ret
                 }
             }
             val list = remember {
-                mutableStateListOf<Drink>().apply { addAll(dataCallback.liquorProduct.drinks) }
+                SnapshotStateList<Drink>().apply { addAll(dataCallback.liquorProduct.drinks) }
             }
             Log.d("Shyam", "DrinkListView ${list.size}")
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
